@@ -13,3 +13,7 @@ class Men (models.Model):
 
     def __str__(self):
         return self.title
+    
+    class Meta:
+        ordering_by = ['-time_create']
+
