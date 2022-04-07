@@ -1,11 +1,19 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseNotFound
 
+from .models import Men
+
 # Create your views here.
 
+menu = ['Home', 'About', 'Add post', 'Feedback', 'Login']
 
 def index(request):
-    return HttpResponse("Hello, world. You're at the blog index.")
+    # return HttpResponse("Hello, world. You're at the blog index.")
+    posts = Men.objects.all()
+    return render(request, 'blog/index.html', {'menu' : menu, 'title' : 'Main page', 'posts' : posts})   # third el is var key & value
+
+def about(request):
+    return render(request, 'blog/about.html', {'menu' : menu, 'title' : 'About'}) # use render for rendering html template
 
 
 def category(request, catId):

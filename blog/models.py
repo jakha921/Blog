@@ -3,7 +3,7 @@ from django.db import models
 # Create your models here.
 
 
-class Men (models.Model):
+class Men(models.Model):
     title = models.CharField(max_length=255)
     content = models.TextField(blank=True)
     photo = models.ImageField(upload_to='photos/%Y/%m/%d/')
@@ -13,7 +13,5 @@ class Men (models.Model):
 
     def __str__(self):
         return self.title
-    
-    class Meta:
-        ordering_by = ['-time_create']
+
 
