@@ -5,35 +5,37 @@ from .models import Men
 
 # Create your views here.
 
-menu = ['Home', 'About', 'Add post', 'Feedback', 'Login']
+menu = [{'title': "About", 'url_name': 'about'},
+        {'title': "Add post", 'url_name': 'add_page'},
+        {'title': "Contact", 'url_name': 'contact'},
+        {'title': "Login", 'url_name': 'login'}]
 
 def index(request):
-    # return HttpResponse("Hello, world. You're at the blog index.")
     posts = Men.objects.all()
-    return render(request, 'blog/index.html', {'menu' : menu, 'title' : 'Main page', 'posts' : posts})   # third el is var key & value
+    context = {
+        'menu' : menu,
+        'title' : 'Main page',
+        'posts' : posts
+    }
+    return render(request, 'blog/index.html', context)   # third el is var key & value
 
 def about(request):
     return render(request, 'blog/about.html', {'menu' : menu, 'title' : 'About'}) # use render for rendering html template
+    # return HttpResponse("About")
+    
+def addpage (request):
+    return HttpResponse("Add post")
 
+def contact(request):
+    return HttpResponse ("Contact")
 
-def category(request, catId):
-    return HttpResponse(f"<h1>You're looking at category. <b>{catId}</b></h1>")
+def login(request):
+    return HttpResponse ("Login")
 
-# def category(request, cat):
-#     if request.GET:
-#         print(request.GET)
-    # http://127.0.0.1:8000/cat/qwer/?name=Jakhongir&age=21
-    # <QueryDict: {'name': ['Jakhongir'], 'age': ['21']}>
-    # return HttpResponse(f"<h1>You're looking at category. <b>{cat}</b></h1>")
+def show_post(request, post_id):
+    return HttpResponse (f"Post id {post_id}")
 
 
 # Error 404
 def page_not_found(request, exception):
     return HttpResponseNotFound("<h1>Sorry but i can find this page</h1>")
-
-
-# redirect by name
-def archive(request, year):
-    if int(year) > 2021:
-        return redirect('home')
-    return HttpResponse(f"<h1>You're looking at archieve. <b>{year}</b></h1>")
