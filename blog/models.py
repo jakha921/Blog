@@ -5,19 +5,24 @@ from django.urls import reverse
 
 
 class Men(models.Model):
-    title = models.CharField(max_length=255)
-    content = models.TextField(blank=True)
-    photo = models.ImageField(upload_to='photos/%Y/%m/%d/')
-    time_create = models.DateField(auto_now_add=True)
+    title = models.CharField('title', max_length=255)
+    content = models.TextField('post text', blank=True)
+    photo = models.ImageField('celebrity photo', upload_to='photos/%Y/%m/%d/')
+    time_create = models.DateField('post created', auto_now_add=True)
     time_update = models.DateField(auto_now=True)
-    is_published = models.BooleanField(default=True)
-    category = models.ForeignKey('Category', on_delete=models.PROTECT, null=True)
+    is_published = models.BooleanField('publication', default=True)
+    category = models.ForeignKey('Category', on_delete=models.PROTECT, null=True, verbose_name='category')
 
     def __str__(self):
         return self.title
     
     def get_absolute_url(self):
         return reverse('post', kwargs={'post_id': self.pk})
+    
+    class Meta:
+        verbose_name = 'Popular man'
+        verbose_name_plural = 'Popular men'
+        ordering = ['time_create', 'title',]
 
 
 class Category(models.Model):

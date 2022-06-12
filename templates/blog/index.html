@@ -10,6 +10,10 @@
 				<p class="last">Дата : {{p.time_create|date:"d-m-Y"}}</p>
 			</div>
 
+			{% if p.photo %}
+				<p><img src="{{ p.photo.url }}" alt="" class="img-article-left thumb"></p>
+			{% endif %}
+
 			<h2>{{p.title}}</h2>
             {{p.content|truncatewords:50}}
 			<div class="clear"></div>
