@@ -1,7 +1,8 @@
+from unicodedata import category
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseNotFound
 
-from .models import Men
+from .models import Category, Men
 
 # Create your views here.
 
@@ -12,12 +13,20 @@ menu = [{'title': "About", 'url_name': 'about'},
 
 def index(request):
     posts = Men.objects.all()
+    cats  = Category.objects.all()
     context = {
         'menu' : menu,
         'title' : 'Main page',
-        'posts' : posts
+        'posts' : posts,
+        'category' : cats,
+        'cat_selected' : 0,
     }
     return render(request, 'blog/index.html', context)   # third el is var key & value
+
+
+# Error 404
+def page_not_found(request, exception):
+    return HttpResponseNotFound("<h1>Sorry but i can find this page</h1>")
 
 def about(request):
     return render(request, 'blog/about.html', {'menu' : menu, 'title' : 'About'}) # use render for rendering html template
@@ -35,7 +44,18 @@ def login(request):
 def show_post(request, post_id):
     return HttpResponse (f"Post id {post_id}")
 
-
-# Error 404
-def page_not_found(request, exception):
-    return HttpResponseNotFound("<h1>Sorry but i can find this page</h1>")
+def show_category(request, cat_id):
+    posts = Men.objects.filter(category_id=cat_id)
+    cats  = Category.objects.all()
+    
+    if len(posts) == 0:
+        raise page_not_found()
+    
+    context = {
+        'menu' : menu,
+        'title' : 'Displays on the headings',
+        'posts' : posts,
+        'category' : cats,
+        'cat_selected' : cat_id,
+    }
+    return render(request, 'blog/index.html', context)   # third el is var key & value

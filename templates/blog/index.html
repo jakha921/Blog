@@ -4,11 +4,17 @@
 {% block content %}
 <ul class="list-articles">
 	{% for p in posts %}
-			<li><h2>{{p.title}}</h2>
+		<li>
+			<div class="article-panel">
+				<p class="first">Категория : {{p.category}}</p>
+				<p class="last">Дата : {{p.time_create|date:"d-m-Y"}}</p>
+			</div>
+
+			<h2>{{p.title}}</h2>
             {{p.content|truncatewords:50}}
 			<div class="clear"></div>
 			<p class="link-read-post"><a href="{{ p.get_absolute_url }}">Read post</a></p>
-			</li>
+		</li>
 	{% endfor %}
 </ul>
 {% endblock %}
