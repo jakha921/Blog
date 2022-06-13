@@ -13,12 +13,10 @@ menu = [{'title': "About", 'url_name': 'about'},
 
 def index(request):
     posts = Men.objects.all()
-    cats  = Category.objects.all()
     context = {
         'menu' : menu,
         'title' : 'Main page',
         'posts' : posts,
-        'category' : cats,
         'cat_selected' : 0,
     }
     return render(request, 'blog/index.html', context)   # third el is var key & value
@@ -46,7 +44,6 @@ def show_post(request, post_id):
 
 def show_category(request, cat_id):
     posts = Men.objects.filter(category_id=cat_id)
-    cats  = Category.objects.all()
     
     if len(posts) == 0:
         raise page_not_found()
@@ -55,7 +52,6 @@ def show_category(request, cat_id):
         'menu' : menu,
         'title' : 'Displays on the headings',
         'posts' : posts,
-        'category' : cats,
         'cat_selected' : cat_id,
     }
     return render(request, 'blog/index.html', context)   # third el is var key & value
