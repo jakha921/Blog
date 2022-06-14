@@ -1,5 +1,6 @@
+from gc import get_objects
 from unicodedata import category
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseNotFound
 
 from .models import Category, Men
@@ -39,11 +40,20 @@ def contact(request):
 def login(request):
     return HttpResponse ("Login")
 
-def show_post(request, post_id):
-    return HttpResponse (f"Post id {post_id}")
+def show_post(request, post_slug):
+    post = get_object_or_404(Men, slug=post_slug)
+
+    context = {
+        'post': post,
+        'menu': menu,
+        'title': post.title,
+        'cat_selected': post.category_id
+    }
+
+    return render(request, 'blog/post.html', context)
 
 def show_category(request, cat_id):
-    posts = Men.objects.filter(category_id=cat_id)
+    posts = Men.objects.filter(pk=cat_id)
     
     if len(posts) == 0:
         raise page_not_found()
