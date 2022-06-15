@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseNotFound
 
 from .models import Category, Men
+from .forms import AddPostForm
 
 # Create your views here.
 
@@ -32,7 +33,18 @@ def about(request):
     # return HttpResponse("About")
     
 def addpage (request):
-    return HttpResponse("Add post")
+    if request.method == "POST":
+        form = AddPostForm(request.POST)
+        if form.is_valid():
+            # print(form.cleaned_data)
+            try:
+                Men.objects.create(**form.cleaned_data)
+                return redirect('home')
+            except :
+                form.add_error(None, "Error during adding the post")
+    else:
+        form = AddPostForm()
+    return render(request, 'blog/addpage.html', {'form': form, 'menu' : menu, 'title' : 'Add page'})
 
 def contact(request):
     return HttpResponse ("Contact")
