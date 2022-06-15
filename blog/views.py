@@ -32,19 +32,19 @@ def about(request):
     return render(request, 'blog/about.html', {'menu' : menu, 'title' : 'About'}) # use render for rendering html template
     # return HttpResponse("About")
     
-def addpage (request):
-    if request.method == "POST":
-        form = AddPostForm(request.POST)
-        if form.is_valid():
-            # print(form.cleaned_data)
-            try:
-                Men.objects.create(**form.cleaned_data)
-                return redirect('home')
-            except :
-                form.add_error(None, "Error during adding the post")
-    else:
-        form = AddPostForm()
-    return render(request, 'blog/addpage.html', {'form': form, 'menu' : menu, 'title' : 'Add page'})
+def addpage (request): 
+    if request.method == "POST": 
+        form = AddPostForm(request.POST) 
+        if form.is_valid(): 
+            # print(form.cleaned_data) 
+            try: 
+                Men.objects.create(**form.cleaned_data) 
+                return redirect('home') 
+            except : 
+                form.add_error(None, "Error during adding the post") 
+    else:  
+        form = AddPostForm() 
+    return render(request, 'blog/addpage.html', {'form': form, 'menu' : menu, 'title' : 'Add page'}) 
 
 def contact(request):
     return HttpResponse ("Contact")

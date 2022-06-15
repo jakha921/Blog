@@ -11,7 +11,7 @@
 
     {% for f in form %}      
         <p><label for="{{ f.id_for_label }}" class="form-label">{{ f.label }}: </label>{{ f }}</p>
-        <div class="form-error">{{ form.title.errors }}</div>
+    <div class="form-error">{{ form.title.errors }}</div>
     {% endfor %}
 
     <button type="submit">ADD</button>
