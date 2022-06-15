@@ -1,5 +1,3 @@
-from gc import get_objects
-from unicodedata import category
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseNotFound
 
@@ -32,19 +30,16 @@ def about(request):
     return render(request, 'blog/about.html', {'menu' : menu, 'title' : 'About'}) # use render for rendering html template
     # return HttpResponse("About")
     
-def addpage (request): 
-    if request.method == "POST": 
-        form = AddPostForm(request.POST) 
-        if form.is_valid(): 
-            # print(form.cleaned_data) 
-            try: 
-                Men.objects.create(**form.cleaned_data) 
-                return redirect('home') 
-            except : 
-                form.add_error(None, "Error during adding the post") 
-    else:  
-        form = AddPostForm() 
-    return render(request, 'blog/addpage.html', {'form': form, 'menu' : menu, 'title' : 'Add page'}) 
+def addpage(request):
+    if request.method == 'POST':
+        form = AddPostForm(request.POST, request.FILES)
+        if form.is_valid():
+            # print(form.cleaned_data)
+            form.save()
+            return redirect('home')
+    else:
+        form = AddPostForm()
+    return render(request, 'blog/addpage.html', {'menu' : menu, 'title' : 'Add post', 'form' : form})
 
 def contact(request):
     return HttpResponse ("Contact")
@@ -54,6 +49,7 @@ def login(request):
 
 def show_post(request, post_slug):
     post = get_object_or_404(Men, slug=post_slug)
+    print(post.category_id)
 
     context = {
         'post': post,
