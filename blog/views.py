@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseNotFound
+from django.views.generic import ListView, DetailView, CreateView
+from django.urls import reverse_lazy
 
 from .models import Category, Men
 from .forms import AddPostForm
@@ -11,15 +13,22 @@ menu = [{'title': "About", 'url_name': 'about'},
         {'title': "Contact", 'url_name': 'contact'},
         {'title': "Login", 'url_name': 'login'}]
 
-def index(request):
-    posts = Men.objects.all()
-    context = {
-        'menu' : menu,
-        'title' : 'Main page',
-        'posts' : posts,
-        'cat_selected' : 0,
-    }
-    return render(request, 'blog/index.html', context)   # third el is var key & value
+class MenListView(ListView):
+    model = Men                         # tell him from which model to get this all data
+    template_name = 'blog/index.html'   # return render(request, 'blog/index.html', context)
+    context_object_name = 'posts'       # posts = Men.objects.all()
+    # extra_context = {'title' : 'Main page'} # it not recomended because here use just for static data
+    
+    def get_context_data(self, object_list = None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['menu'] = menu
+        context['title'] = 'Main page'
+        context['cat_selected'] = 0
+        return context
+    
+    def get_queryset(self):             # do this if you need check or doing smth
+        return Men.objects.filter(is_published=True)
+
 
 
 # Error 404
@@ -29,17 +38,19 @@ def page_not_found(request, exception):
 def about(request):
     return render(request, 'blog/about.html', {'menu' : menu, 'title' : 'About'}) # use render for rendering html template
     # return HttpResponse("About")
+
+
+class MenAddPostCreateView(CreateView):
+    form_class = AddPostForm
+    template_name = "blog/addpage.html"
+    success_url = reverse_lazy('home')  # The difference between reverse & reverse_lasy is only created, and the second already exists
     
-def addpage(request):
-    if request.method == 'POST':
-        form = AddPostForm(request.POST, request.FILES)
-        if form.is_valid():
-            # print(form.cleaned_data)
-            form.save()
-            return redirect('home')
-    else:
-        form = AddPostForm()
-    return render(request, 'blog/addpage.html', {'menu' : menu, 'title' : 'Add post', 'form' : form})
+    def get_context_data(self,*,object_list=None,** kwargs):
+        context=super().get_context_data(** kwargs)
+        context['title']='Add post'
+        context['menu'] = menu
+        return context
+
 
 def contact(request):
     return HttpResponse ("Contact")
@@ -47,29 +58,33 @@ def contact(request):
 def login(request):
     return HttpResponse ("Login")
 
-def show_post(request, post_slug):
-    post = get_object_or_404(Men, slug=post_slug)
-    print(post.category_id)
 
-    context = {
-        'post': post,
-        'menu': menu,
-        'title': post.title,
-        'cat_selected': post.category_id
-    }
-
-    return render(request, 'blog/post.html', context)
-
-def show_category(request, cat_id):
-    posts = Men.objects.filter(pk=cat_id)
+class MenPostDetailView(DetailView):
+    model = Men
+    template_name = "blog/post.html"
+    slug_url_kwarg = 'post_slug'    # if use in url own slug field
+    context_object_name = 'post'    # used on html for get a data from model
     
-    if len(posts) == 0:
-        raise page_not_found()
+    def get_context_data(self,*,object_list=None,** kwargs):
+        context=super().get_context_data(** kwargs)
+        context['title']=context['post']
+        context['menu']=menu
+        return context
+
+
+class MenCategoryListView(ListView):
+    model = Men
+    template_name = "blog/index.html"
+    context_object_name = 'posts'
+    allow_empty = False
     
-    context = {
-        'menu' : menu,
-        'title' : 'Displays on the headings',
-        'posts' : posts,
-        'cat_selected' : cat_id,
-    }
-    return render(request, 'blog/index.html', context)   # third el is var key & value
+    def get_queryset(self):
+        return Men.objects.filter(category__slug=self.kwargs['cat_slug'], is_published=True)     # url by slug
+
+    def get_context_data(self,*,object_list=None,** kwargs):
+        context=super().get_context_data(** kwargs)
+        print(context)
+        context['title']='Category ' +str(context['posts'][0].category)
+        context['menu']=menu
+        context['cat_selected']=context['posts'][0].category_id
+        return context
