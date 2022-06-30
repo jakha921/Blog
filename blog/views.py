@@ -32,13 +32,13 @@ class MenListView(DataMixin, ListView):
 def page_not_found(request, exception):
     return HttpResponseNotFound("<h1>Sorry but i can find this page</h1>")
 
-@login_required
+@login_required(login_url='/admin/')    # func work login request
 def about(request):
     return render(request, 'blog/about.html', {'menu' : menu, 'title' : 'About'}) # use render for rendering html template
     # return HttpResponse("About")
 
 
-class MenAddPostCreateView(LoginRequiredMixin, DataMixin, CreateView):
+class MenAddPostCreateView(LoginRequiredMixin, DataMixin, CreateView):  # class login request work like this
     form_class = AddPostForm
     template_name = "blog/addpage.html"
     success_url = reverse_lazy('home')  # The difference between reverse & reverse_lasy is only created, and the second already exists
