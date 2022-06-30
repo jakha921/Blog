@@ -2,5 +2,18 @@
 
 {% block content %}
     <h1>{{ title }}</h1>
-    <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Dolores dicta veritatis, vitae </p>
+    {% for el in page_obj %}
+        <p>{{ el}}</p>
+    {% endfor %}
+
+<nav>
+    <ul>
+        {% for p in page_obj.paginator.page_range %}
+            <li>
+                <a href="?page={{ p }}">{{ p }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+</nav>
+
 {% endblock content %}

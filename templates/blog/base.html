@@ -9,6 +9,7 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<link rel="shortcut icon" href="{% static 'blog/images/main.ico' %}" type="image/x-icon"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 </head>
 <body>
 <table class="table-page" border=0 cellpadding="0" cellspacing="0">
@@ -76,6 +77,31 @@
 	<div class="content-text">
 {% block content %}
 {% endblock %}
+
+{% if page_obj.has_other_pages %}
+<nav aria-label="Page navigation example">
+	<lu class="pagination justify-content-center">
+		{% if page_obj.has_previous %}
+			<li class="page-link"><a href="?page={{ page_obj.previous_page_number }}"><<</a></li>		  
+		{% endif %}
+		{% for p in paginator.page_range %}
+			{% if page_obj.number == p %}
+				<li class="page-item disabled">
+					<a class="page-link" href="#" tabindex="-1">{{ p }}</a>
+				</li>
+			{% elif p >= page_obj.number|add:-2 and p <= page_obj.number|add:2 %}
+				<li class="page-item">
+					<a class="page-link" href="?page={{ p }}">{{ p }}</a>
+				</li>
+			{% endif %}
+		{% endfor %}
+		{% if page_obj.has_next %}
+			<li class="page-link"><a href="?page={{ page_obj.next_page_number }}">>></a></li>		  
+		{% endif %}
+	</lu>
+</nav>
+{% endif %}
+
 	</div>
 <!-- Конец блока контента -->
 
