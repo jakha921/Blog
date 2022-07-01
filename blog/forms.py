@@ -1,22 +1,47 @@
+# default form for user form
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+
 from django import forms
 from .models import Men, Category
 
-class AddPostForm(forms.ModelForm): 
+
+class AddPostForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['category'].empty_label = "Category do not choose"  # пустой выбор категории
+        # пустой выбор категории
+        self.fields['category'].empty_label = "Category do not choose"
+
     class Meta:
         model = Men
-        fields = ('title', 'slug', 'content', 'photo', 'is_published', 'category', )
+        fields = ('title', 'slug', 'content', 'photo',
+                  'is_published', 'category', )
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-input'}),
             'content': forms.Textarea(attrs={'cols': '30', 'rows': '10'}),
-            
+
         }
-        
+
     def clean_title(self):
         """Check the length of the title"""
         data = self.cleaned_data["title"]
         if len(data) > 200:
             raise forms.ValidationError("Title is too long")
         return data
+
+
+class RegisterUserForm(UserCreationForm):
+    username = forms.CharField(label='Login', widget=forms.TimeInput(attrs={'class': 'form-input'}))
+    email = forms.EmailField(label='Email', widget=forms.EmailInput(attrs={'class': 'form-input'}))
+    password1 = forms.CharField(label='Password', widget=forms.PasswordInput(attrs={'class': 'form-input'}))
+    password2 = forms.CharField(label='Confirm password', widget=forms.PasswordInput(attrs={'class': 'form-input'}))
+    # Metadata
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password1', 'password2']
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-input'}),
+            'password1': forms.PasswordInput(attrs={'class': 'form-input'}),
+            'password2': forms.PasswordInput(attrs={'class': 'form-input'}),
+            
+        }

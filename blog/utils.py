@@ -4,10 +4,10 @@ from .models import Category
 menu = [{'title': "About", 'url_name': 'about'},
         {'title': "Add post", 'url_name': 'add_page'},
         {'title': "Contact", 'url_name': 'contact'},
-        {'title': "Login", 'url_name': 'login'}]
+        ]
 
 class DataMixin:
-    paginate_by = 1
+    paginate_by = 3
     
     def get_user_context(self,** kwargs):
         context = kwargs
