@@ -3,11 +3,13 @@ from django.http import HttpResponse, HttpResponseNotFound
 from django.views.generic import ListView, DetailView, CreateView
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import LoginView
+from django.contrib.auth import logout, login                     # logout django model
 from django.contrib.auth.decorators import login_required   # decorator for login req
 from django.core.paginator import Paginator                 # for pagination on func
 
 from .models import Category, Men
-from .forms import AddPostForm, RegisterUserForm
+from .forms import AddPostForm, RegisterUserForm, LoginUserForm
 from .utils import DataMixin, menu
 
 # Create your views here.
@@ -62,9 +64,6 @@ class MenAddPostCreateView(LoginRequiredMixin, DataMixin, CreateView):  # class 
 def contact(request):
     return HttpResponse ("Contact")
 
-def login(request):
-    return HttpResponse ("Login")
-
 
 class MenPostDetailView(DataMixin, DetailView):
     model = Men
@@ -104,3 +103,31 @@ class RegisterUserCreateView(DataMixin, CreateView):
         c_def = self.get_user_context(title="Registration")
         return dict(list(context.items())+list(c_def.items()))
 
+    def form_valid(self, form):
+        """
+        after registration auto login to site
+        """
+        user = form.save()
+        login(self.request, user)
+        return redirect('home')
+
+
+
+class LoginUserView(DataMixin, LoginView):
+    form_class = LoginUserForm
+    template_name = "blog/login.html"    
+    success_url = reverse_lazy('login')     # LoginView auto redirect to host_name/accounts/profile if do not use success_url
+    
+    def get_context_data(self,*,object_list=None,** kwargs):
+        context=super().get_context_data(** kwargs)
+        c_def = self.get_user_context(title="Authentication")
+        return dict(list(context.items())+list(c_def.items()))
+
+    # def get_success_url(self):          # in settings may use LOGIN_REDIRECT_URL = '/'
+    #     return reverse_lazy('home')     # redirect to home page
+
+
+def logout_user(request):
+    """Django model for logout"""
+    logout(request)
+    return redirect('login')
