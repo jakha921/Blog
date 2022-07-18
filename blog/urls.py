@@ -1,10 +1,12 @@
-from django.urls import path, include
+from django.urls import path
+from django.views.decorators.cache import cache_page
 from . import views
 
 
 urlpatterns = [
-    path('', views.MenListView.as_view(), name='home'), # http://127.0.0.1:8000/blog/
-    path('about/', views.about, name='about'), # http://127.0.0.1:8000/about/
+    # path('', cache_page(60)(views.MenListView.as_view()), name='home'), 
+    path('', views.MenListView.as_view(), name='home'), 
+    path('about/', views.about, name='about'), 
     path('addpage/', views.MenAddPostCreateView.as_view(), name='add_page'),
     path('contact/', views.contact, name='contact'),
     path('login/', views.LoginUserView.as_view(), name='login'),
