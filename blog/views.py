@@ -28,7 +28,7 @@ class MenListView(DataMixin, ListView):
         return dict(list(context.items())+list(c_def.items()))
 
     def get_queryset(self):             # do this if you need check or doing smth
-        return Men.objects.filter(is_published=True)
+        return Men.objects.filter(is_published=True).select_related('category')
 
 
 
@@ -88,8 +88,9 @@ class MenCategoryListView(DataMixin, ListView):
 
     def get_context_data(self,*,object_list=None,** kwargs):
         context=super().get_context_data(** kwargs)
-        c_def = self.get_user_context(title='Category ' +str(context['posts'][0].category),
-                                        cat_selected = context['posts'][0].category_id )
+        c = Category.objects.get(slug=self.kwargs['cat_slug'])
+        c_def = self.get_user_context(title='Category ' +str(c.name),
+                                        cat_selected = c.pk)
         return dict(list(context.items())+list(c_def.items()))
 
 
